@@ -228,7 +228,7 @@ if (!reduceMotion && finePointer) {
 
 // Cursor-tracked warm glow on dark surfaces
 if (finePointer) {
-  document.querySelectorAll('.cta-banner, .band-dark .card').forEach((el) => {
+  document.querySelectorAll('.cta-banner, .band-dark .card, .card.band-dark').forEach((el) => {
     el.classList.add('glow-track');
     el.addEventListener('mousemove', (e) => {
       const r = el.getBoundingClientRect();

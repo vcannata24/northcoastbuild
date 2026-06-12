@@ -32,10 +32,10 @@ No tooling required. Either:
 3. (Optional) Add a custom domain `northcoastbuild.com` and create a `CNAME` file.
 
 ## Before going live — checklist
-- [ ] **Contact form:** create a free form at [formspree.io](https://formspree.io),
-      then in `contact.html` replace `REPLACE_WITH_ID` in the `<form action="...">`
-      with your form ID. Until then the form falls back to opening the visitor's
-      email app (still works, just less seamless).
+- [x] **Contact form:** wired to Formspree (`formspree.io/f/xlgkorqo`).
+      Submit the form once and click the confirmation link Formspree emails you —
+      after that, leads arrive in your inbox. (If Formspree is ever unreachable,
+      the form falls back to opening the visitor's email app.)
 - [x] **Booking link:** every "Book a call" button opens Calendly
       (`calendly.com/vcannata24-bw/30min`); the contact page also has a
       lazy-loaded inline calendar.

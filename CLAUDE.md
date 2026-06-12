@@ -13,6 +13,8 @@ Keep it that way unless explicitly asked.
   (UI/buttons), Inter (body). Warm cream paper `#FAF5EC`, amber `#E0712F` actions,
   green `#2C7A53` accents. Motion uses the `--ease-out` / `--ease-soft` /
   `--dur-*` vars; transform/opacity only.
+- Contact form posts to Formspree (`formspree.io/f/xlgkorqo`) with a mailto
+  fallback if the request fails.
 - `script.js` — vanilla JS: mobile nav, FAQ accordion, staggered scroll reveals
   (reveal classes are *removed* after playing so hover timings reset), contact
   form (Formspree + mailto fallback), and showpieces (hero typing/build sequence,
@@ -36,7 +38,6 @@ parent dir has a `vince-site` config). Don't open pages with a preview rooted at
 a parent folder — relative CSS/JS paths will 404.
 
 ## Pending (owner-provided)
-- Formspree form ID → replace `REPLACE_WITH_ID` in `contact.html`.
 - Real before/after screenshots → replace stylized placeholders in `work.html`
   (drop files in `assets/`, convert to WebP, add alt text).
 - Confirm/purchase `northcoastbuild.com` — all `og:`/`canonical` tags assume it.

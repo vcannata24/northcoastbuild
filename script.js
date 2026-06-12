@@ -147,6 +147,35 @@ if (form) {
   });
 }
 
+// Lazy-load the Calendly inline embed as it approaches the viewport,
+// so the third-party script never slows the initial page render.
+const calBox = document.querySelector('#calendly-embed');
+if (calBox) {
+  const loadCal = () => {
+    if (calBox.dataset.loaded) return;
+    calBox.dataset.loaded = '1';
+    calBox.innerHTML = '';
+    const widget = document.createElement('div');
+    widget.className = 'calendly-inline-widget';
+    widget.setAttribute('data-url', calBox.dataset.calendly);
+    widget.style.minWidth = '320px';
+    widget.style.height = '680px';
+    calBox.appendChild(widget);
+    const s = document.createElement('script');
+    s.src = 'https://assets.calendly.com/assets/external/widget.js';
+    s.async = true;
+    document.body.appendChild(s);
+  };
+  if ('IntersectionObserver' in window) {
+    const calIo = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { loadCal(); calIo.disconnect(); }
+    }, { rootMargin: '600px 0px' });
+    calIo.observe(calBox);
+  } else {
+    loadCal();
+  }
+}
+
 // ---------- Showpieces ----------
 const finePointer = window.matchMedia('(pointer: fine)').matches;
 

@@ -36,7 +36,9 @@ No tooling required. Either:
       then in `contact.html` replace `REPLACE_WITH_ID` in the `<form action="...">`
       with your form ID. Until then the form falls back to opening the visitor's
       email app (still works, just less seamless).
-- [ ] **Booking link:** point every "Book a call" button at your Calendly (or similar).
+- [x] **Booking link:** every "Book a call" button opens Calendly
+      (`calendly.com/vcannata24-bw/30min`); the contact page also has a
+      lazy-loaded inline calendar.
 - [ ] **Real screenshots:** swap the placeholder mockups on `work.html` for real
       before/after images of your builds — this is the biggest credibility lever.
 - [ ] **Domain:** confirm/buy `northcoastbuild.com`; the social/meta tags already

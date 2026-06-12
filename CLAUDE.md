@@ -23,6 +23,8 @@ Keep it that way unless explicitly asked.
 - The user is **Vincent** (never "Vince") — see About page copy.
 - Voice: plain-English, owner-facing, no jargon, no hype. Prices stated openly.
 - Every page keeps "Book a call" + free-audit CTAs visible (nav + banner).
+- Booking: "Book a call" buttons open Calendly (`calendly.com/vcannata24-bw/30min`)
+  in a new tab; the contact page has a lazy-loaded inline embed (`#calendly-embed`).
 - Work page grows one case study per finished job; keep the before/after +
   one-sentence-result format.
 - Icons are inline SVG (no emoji, no icon fonts). `em` inside headlines = green
@@ -35,7 +37,6 @@ a parent folder — relative CSS/JS paths will 404.
 
 ## Pending (owner-provided)
 - Formspree form ID → replace `REPLACE_WITH_ID` in `contact.html`.
-- Calendly URL → wire all "Book a call" buttons.
 - Real before/after screenshots → replace stylized placeholders in `work.html`
   (drop files in `assets/`, convert to WebP, add alt text).
 - Confirm/purchase `northcoastbuild.com` — all `og:`/`canonical` tags assume it.

@@ -27,12 +27,51 @@ document.querySelectorAll('.faq-item').forEach((item) => {
   });
 });
 
-// Scroll reveal
+// Elevate the sticky nav once the page is scrolled
+const navWrap = document.querySelector('.nav-wrap');
+if (navWrap) {
+  const elevate = () => navWrap.classList.toggle('scrolled', window.scrollY > 10);
+  elevate();
+  window.addEventListener('scroll', elevate, { passive: true });
+}
+
+// Scroll reveal with stagger.
+// Containers that reveal as one block hand the reveal down to their children
+// so grids, FAQ items, and the before/after columns cascade in.
+document.querySelectorAll('.grid.reveal, .faq.reveal, .ba.reveal').forEach((box) => {
+  box.classList.remove('reveal');
+  Array.from(box.children).forEach((child) => child.classList.add('reveal'));
+});
+
 const reveals = document.querySelectorAll('.reveal');
-if ('IntersectionObserver' in window && reveals.length) {
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!reduceMotion && 'IntersectionObserver' in window && reveals.length) {
+  // Siblings revealing together get incremental delays (capped) for a cascade.
+  const byParent = new Map();
+  reveals.forEach((el) => {
+    const key = el.parentElement;
+    if (!byParent.has(key)) byParent.set(key, []);
+    byParent.get(key).push(el);
+  });
+  byParent.forEach((els) => {
+    if (els.length < 2) return;
+    els.forEach((el, i) => { el.style.transitionDelay = Math.min(i * 80, 480) + 'ms'; });
+  });
+
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      el.classList.add('in');
+      io.unobserve(el);
+      // Once the reveal has played, hand transitions back to the base styles
+      // so card/button hovers aren't stuck on the slow reveal timing.
+      const delay = parseFloat(el.style.transitionDelay) || 0;
+      setTimeout(() => {
+        el.classList.remove('reveal', 'in');
+        el.style.transitionDelay = '';
+      }, 750 + delay);
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   reveals.forEach((el) => io.observe(el));
@@ -105,5 +144,96 @@ if (form) {
     } finally {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalLabel; }
     }
+  });
+}
+
+// ---------- Showpieces ----------
+const finePointer = window.matchMedia('(pointer: fine)').matches;
+
+// Scroll progress bar
+const progress = document.createElement('div');
+progress.className = 'scroll-progress';
+progress.setAttribute('aria-hidden', 'true');
+document.body.appendChild(progress);
+const setProgress = () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+};
+setProgress();
+window.addEventListener('scroll', setProgress, { passive: true });
+window.addEventListener('resize', setProgress, { passive: true });
+
+// Hero device: the URL types itself out, caret blinking, then CSS builds the mock site
+const urlEl = document.querySelector('.hero-visual .device-url');
+if (urlEl && !reduceMotion) {
+  const full = urlEl.textContent.trim();
+  urlEl.textContent = '';
+  urlEl.classList.add('typing');
+  let i = 0;
+  const type = () => {
+    urlEl.textContent = full.slice(0, ++i);
+    if (i < full.length) setTimeout(type, 45 + Math.random() * 70);
+    else setTimeout(() => urlEl.classList.remove('typing'), 1100);
+  };
+  setTimeout(type, 450);
+}
+
+// Count-up stats inside the hero mock (e.g. "+38%" climbs from zero)
+if (!reduceMotion) {
+  document.querySelectorAll('.hero-visual .mock-card .k').forEach((el) => {
+    const m = el.textContent.trim().match(/^([+\-]?)(\d+)(%?)$/);
+    if (!m || +m[2] === 0) return;
+    const sign = m[1], target = +m[2], suffix = m[3];
+    const begin = performance.now() + 1350; // wait for the stat card to rise in
+    const dur = 900;
+    el.textContent = sign + '0' + suffix;
+    const tick = (now) => {
+      const t = Math.min((now - begin) / dur, 1);
+      if (t >= 0) {
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = sign + Math.round(target * eased) + suffix;
+      }
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+// 3D tilt on the hero device, following the cursor
+const tiltDevice = document.querySelector('.hero-visual .device');
+if (tiltDevice && !reduceMotion && finePointer) {
+  const zone = tiltDevice.parentElement;
+  zone.addEventListener('mousemove', (e) => {
+    const r = zone.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    tiltDevice.style.transform =
+      'perspective(900px) rotateY(' + (x * 7).toFixed(2) + 'deg) rotateX(' + (y * -6).toFixed(2) + 'deg)';
+  });
+  zone.addEventListener('mouseleave', () => { tiltDevice.style.transform = ''; });
+}
+
+// Magnetic pull on primary buttons
+if (!reduceMotion && finePointer) {
+  document.querySelectorAll('.btn-primary').forEach((btn) => {
+    btn.addEventListener('mousemove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * 0.12;
+      const y = (e.clientY - r.top - r.height / 2) * 0.18;
+      btn.style.transform = 'translate(' + x.toFixed(1) + 'px, ' + (y - 1).toFixed(1) + 'px)';
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+}
+
+// Cursor-tracked warm glow on dark surfaces
+if (finePointer) {
+  document.querySelectorAll('.cta-banner, .band-dark .card').forEach((el) => {
+    el.classList.add('glow-track');
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
   });
 }
